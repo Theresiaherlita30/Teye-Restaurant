@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .login-box {
+            max-width: 400px;
+            margin: auto;
+            border: 1px solid #ced4da;
+            padding: 20px;
+            margin-top: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="login-box">
+                    <h4 class="text-center">Login</h4>
+                    <form id="login" method="post" action="">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-block">Login</button>
+                        <br>
+                        <a>Pengguna baru?</a><a href="/restaurant/register"> Buat Akun</a>
+                    </form>
+                    <div id="notification" class="mt-3 text-center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and SweetAlert CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.getElementById('login').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var form = e.target;
+            form.action = 'http://localhost:8090/api/users/login'; // Ganti dengan URL yang benar
+            var formData = new FormData(form);
+            var jsonObject = {};
+            formData.forEach(function (value, key) {
+                jsonObject[key] = value;
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: form.action,
+                data: jsonObject,
+                success: function (response) {
+                    if (response.includes("successful")) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/restaurant/beranda";
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response
+                        });
+                    }
+                },
+                error: function (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.responseText
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
